@@ -24,6 +24,7 @@ export default function App() {
   const [date, setDate] = useState('2026-01-21');
   const [day, setDay] = useState<Day | null>(null);
   const [month, setMonth] = useState<Month | null>(null);
+  const [monthError, setMonthError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [attempt, setAttempt] = useState(0);
@@ -65,11 +66,16 @@ export default function App() {
     if (!meta?.dataReady) return;
     const ac = new AbortController();
     setMonth(null);
+    setMonthError(null);
     getMonth(auction, ac.signal)
       .then(setMonth)
-      .catch((e) => e.name !== 'AbortError' && setMonth(null));
+      .catch((e) => {
+        if (e.name === 'AbortError') return;
+        setMonth(null);
+        setMonthError(`Could not load monthly analysis. ${e.message}`);
+      });
     return () => ac.abort();
-  }, [meta, auction]);
+  }, [meta, auction, attempt]);
 
   const go = (v: View) => {
     window.location.hash = `#/${v}`;
@@ -147,13 +153,20 @@ export default function App() {
           />
         )}
         {view === 'month' && meta?.dataReady && (
-          <MonthView
-            month={month}
-            onOpenDay={(d) => {
-              setDate(d);
-              go('day');
-            }}
-          />
+          monthError ? (
+            <div className="notice" role="alert">
+              <p>{monthError}</p>
+              <button className="button" onClick={() => setAttempt((n) => n + 1)}>Try again</button>
+            </div>
+          ) : (
+            <MonthView
+              month={month}
+              onOpenDay={(d) => {
+                setDate(d);
+                go('day');
+              }}
+            />
+          )
         )}
         {view === 'method' && <Method meta={meta} />}
       </main>

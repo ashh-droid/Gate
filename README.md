@@ -6,7 +6,7 @@ Gate is a pilot for a Great Britain electricity utility's day-ahead procurement 
 
 **[Live application](https://r7k4m2q.vercel.app/)** · **[Source code](https://github.com/ashh-droid/r7k4m2q)** · **[Interactive API documentation](https://r7k4m2q.vercel.app/api/docs)**
 
-**Video demonstration:** [ Unlisted YouTube link ](https://youtu.be/sP-w30T-zRY)
+**Recorded demo:** [Watch the Gate walkthrough](https://youtu.be/sP-w30T-zRY)
 
 ![Gate day view showing the 21 January 2026 EPEX hourly scenario](assets/gate-day.png)
 
@@ -87,7 +87,23 @@ npm ci
 npm run dev
 ```
 
-Open **http://localhost:5173**; Vite proxies API requests to the Python server. Run tests from the project root using the virtual-environment Python (`-m pytest -q`); run `npm run build` from `frontend/`. GitHub Actions runs backend tests and the frontend production build on pushes and pull requests.
+Open **http://localhost:5173**; Vite proxies API requests to the Python server. Run tests from the project root using the virtual-environment Python (`-m pytest -q`); run `npm run build` from `frontend/`. GitHub Actions is not configured for this repository to avoid runner usage. Run the tests and production build locally before publishing updates.
+
+## Validate locally (no GitHub Actions)
+
+GitHub Actions is intentionally not used for this project. These commands work from the repository root in Windows PowerShell, with Python 3.12 and Node.js 22 installed:
+
+```powershell
+py -3.12 -m venv .venv
+.\\.venv\\Scripts\\python.exe -m pip install -r backend/requirements-ingest.txt
+.\\.venv\\Scripts\\python.exe -m pytest -q
+.\\.venv\\Scripts\\python.exe backend/scripts/audit.py
+cd frontend
+npm ci
+npm run build
+```
+
+The API integration tests **fail** if the included January Elexon snapshot is missing; a missing dataset is not a passing test. After deployment, check `/api/health`, `/api/meta`, `/api/docs`, all three auction selectors, day navigation, the month analysis view, revision history, CSV export, and the narrow-screen layout. This project is a historical research pilot, not a live forecasting service.
 
 ## Project structure
 
@@ -108,7 +124,7 @@ Open **http://localhost:5173**; Vite proxies API requests to the Python server. 
 | `notebooks/analysis.ipynb` | Reproducible January analysis |
 | `docker-compose.yml`, `backend/Dockerfile`, `frontend/Dockerfile` | Reproducible local containers |
 | `frontend/nginx.conf`, `vercel.json` | Application routing and public deployment |
-| `.github/workflows/ci.yml` | Automated backend tests and frontend production build |
+| Local verification | Python integration tests, Elexon snapshot audit, and frontend production build |
 
 To recreate the snapshot, install the ingestion requirements and run `python backend/scripts/ingest.py` from the repository root. This fetches Elexon's public endpoints. The committed snapshot preserves the data used for the published figures.
 

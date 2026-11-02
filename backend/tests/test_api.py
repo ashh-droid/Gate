@@ -16,8 +16,7 @@ CLIENT = TestClient(app)
 def real_snapshot(monkeypatch):
     monkeypatch.delenv('WIND_DATA_DIR', raising=False)
     load_snapshot.cache_clear()
-    if not CLIENT.get('/api/health').json()['dataReady']:
-        pytest.skip('real snapshot not present')
+    assert CLIENT.get('/api/health').json()['dataReady'], 'Expected the committed January Elexon snapshot for API integration tests'
 
 
 @pytest.mark.parametrize('auction', list(AUCTIONS))
