@@ -4,7 +4,7 @@ Gate is a pilot for a Great Britain electricity utility's day-ahead procurement 
 
 **Pilot scope:** purchase decisions made **1–31 January 2026**, for electricity delivery **2 January–1 February 2026**.
 
-**[Live application](https://r7k4m2q.vercel.app/)** · **[Source code](https://github.com/ashh-droid/r7k4m2q)** · **[Interactive API documentation](https://r7k4m2q.vercel.app/api/docs)**
+**[Live application](https://gate-ashhdroid.vercel.app/)** · **[Source code](https://github.com/ashh-droid/Gate)** · **[Interactive API documentation](https://gate-ashhdroid.vercel.app/api/docs)**
 
 **Recorded demo:** [Watch the Gate walkthrough](https://youtu.be/sP-w30T-zRY)
 
